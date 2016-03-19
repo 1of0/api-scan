@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.0)
 
-set(CMAKE_TOOLCHAIN_FILE cmake/clang.cmake)
+set(CMAKE_TOOLCHAIN_FILE cmake/LLVMToolchain.cmake)
 
 project(libsodium_interface_parser)
 
