@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 
 #include "llvm/Support/Host.h"
 #include "llvm/ADT/IntrusiveRefCntPtr.h"
@@ -6,18 +7,15 @@
 #include "clang/Basic/DiagnosticOptions.h"
 #include "clang/Frontend/TextDiagnosticPrinter.h"
 #include "clang/Frontend/CompilerInstance.h"
-#include "clang/Basic/TargetOptions.h"
 #include "clang/Basic/TargetInfo.h"
-#include "clang/Basic/FileManager.h"
-#include "clang/Basic/SourceManager.h"
 #include "clang/Lex/Preprocessor.h"
-#include "clang/Basic/Diagnostic.h"
 #include "clang/AST/ASTContext.h"
-#include "clang/AST/ASTConsumer.h"
 #include "clang/Parse/Parser.h"
 #include "clang/Parse/ParseAST.h"
 #include "clang/Lex/HeaderSearch.h"
-#include "clang/Frontend/Utils.h"
+
+std::string exec(const char* cmd);
+std::vector<std::string> getGccIncludes();
 
 /******************************************************************************
  *
@@ -81,16 +79,22 @@ int main()
 	using clang::TextDiagnosticPrinter;
 
 	CompilerInstance ci;
-	DiagnosticOptions diagnosticOptions;
 	ci.createDiagnostics();
 
-	std::shared_ptr<TargetOptions> pto( new TargetOptions());
+	std::shared_ptr<TargetOptions> pto(new TargetOptions());
 	pto->Triple = llvm::sys::getDefaultTargetTriple();
+
 	TargetInfo *pti = TargetInfo::CreateTargetInfo(ci.getDiagnostics(), pto);
 	ci.setTarget(pti);
 
 	ci.createFileManager();
 	ci.createSourceManager(ci.getFileManager());
+
+	for (std::string include : getGccIncludes())
+	{
+		ci.getHeaderSearchOpts().AddPath(include, clang::frontend::Angled, false, false);
+	}
+
 	ci.createPreprocessor(clang::TranslationUnitKind::TU_Complete);
 
 	MyASTConsumer *astConsumer = new MyASTConsumer();
@@ -100,10 +104,64 @@ int main()
 
 	const FileEntry *pFile = ci.getFileManager().getFile("/home/bernardo/projects/c/libsodium/src/libsodium/include/sodium.h");
 	ci.getSourceManager().setMainFileID(ci.getSourceManager().createFileID(pFile, clang::SourceLocation(), clang::SrcMgr::C_User));
-	ci.getDiagnosticClient().BeginSourceFile(ci.getLangOpts(),
-											 &ci.getPreprocessor());
+	ci.getDiagnosticClient().BeginSourceFile(ci.getLangOpts(), &ci.getPreprocessor());
 	clang::ParseAST(ci.getPreprocessor(), astConsumer, ci.getASTContext());
 	ci.getDiagnosticClient().EndSourceFile();
 
 	return 0;
+}
+
+std::vector<std::string> getGccIncludes()
+{
+	std::string result = exec("echo | gcc -Wp,-v -x c - -fsyntax-only 2>&1");
+	std::vector<std::string> includes;
+
+	std::stringstream stream(result);
+	std::string line;
+	bool listingIncludes = false;
+
+	while (std::getline(stream, line, '\n'))
+	{
+		if (line == "#include \\\"...\\\" search starts here:" || line == "#include <...> search starts here:")
+		{
+			listingIncludes = true;
+			continue;
+		}
+
+		if (line == "End of search list.")
+		{
+			listingIncludes = false;
+			continue;
+		}
+
+		if (listingIncludes)
+		{
+			includes.push_back(line.substr(1));
+		}
+	}
+
+	return includes;
+}
+
+std::string exec(const char* cmd)
+{
+	std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
+
+	if (!pipe)
+	{
+		return "";
+	}
+
+	char buffer[128];
+	std::string result = "";
+
+	while (!feof(pipe.get()))
+	{
+		if (fgets(buffer, 128, pipe.get()) != NULL)
+		{
+			result += buffer;
+		}
+	}
+
+	return result;
 }
