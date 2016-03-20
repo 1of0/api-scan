@@ -14,8 +14,12 @@
 #include "clang/Parse/ParseAST.h"
 #include "clang/Lex/HeaderSearch.h"
 
-std::string exec(const char* cmd);
-std::vector<std::string> getGccIncludes();
+using std::string;
+using std::shared_ptr;
+using std::vector;
+
+string exec(const char* cmd);
+vector<string> getGccIncludes();
 
 /******************************************************************************
  *
@@ -77,6 +81,7 @@ int main()
 	using clang::Parser;
 	using clang::DiagnosticOptions;
 	using clang::TextDiagnosticPrinter;
+	using clang::TranslationUnitKind;
 
 	CompilerInstance ci;
 	ci.createDiagnostics();
@@ -95,7 +100,7 @@ int main()
 		ci.getHeaderSearchOpts().AddPath(include, clang::frontend::Angled, false, false);
 	}
 
-	ci.createPreprocessor(clang::TranslationUnitKind::TU_Complete);
+	ci.createPreprocessor(TranslationUnitKind::TU_Complete);
 
 	MyASTConsumer *astConsumer = new MyASTConsumer();
 	ci.setASTConsumer(llvm::make_unique<MyASTConsumer>());
@@ -111,13 +116,13 @@ int main()
 	return 0;
 }
 
-std::vector<std::string> getGccIncludes()
+vector<string> getGccIncludes()
 {
-	std::string result = exec("echo | gcc -Wp,-v -x c - -fsyntax-only 2>&1");
-	std::vector<std::string> includes;
+	string result = exec("echo | gcc -Wp,-v -x c - -fsyntax-only 2>&1");
+	vector<string> includes;
 
 	std::stringstream stream(result);
-	std::string line;
+	string line;
 	bool listingIncludes = false;
 
 	while (std::getline(stream, line, '\n'))
@@ -143,9 +148,9 @@ std::vector<std::string> getGccIncludes()
 	return includes;
 }
 
-std::string exec(const char* cmd)
+string exec(const char* cmd)
 {
-	std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
+	shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
 
 	if (!pipe)
 	{
@@ -153,7 +158,7 @@ std::string exec(const char* cmd)
 	}
 
 	char buffer[128];
-	std::string result = "";
+	string result = "";
 
 	while (!feof(pipe.get()))
 	{
