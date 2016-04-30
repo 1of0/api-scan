@@ -1,0 +1,62 @@
+m               = message
+mlen            = messageLength
+mlen_p          = messageLengthPointer
+
+c               = cipherText
+clen            = cipherTextLength
+clen_p          = cipherTextLengthPointer
+
+sig             = signature
+siglen          = signatureLength
+siglen_p        = signatureLengthPointer
+
+sm              = sealedMessage
+smlen           = sealedMessageLength
+smlen_p         = sealedMessageLengthPointer
+
+ad              = authenticatedData
+adlen           = authenticatedDataLength
+adlen_p         = authenticatedDataLengthPointer
+
+salt            = salt
+saltlen         = saltLength
+saltlen_p       = saltLengthPointer
+
+out             = output
+outlen          = outputLength
+outlen_p        = outputLengthPointer
+
+passwd          = password
+passwdlen       = passwordLength
+
+in              = input
+inlen           = inputLength
+
+buf             = buffer
+buflen          = bufferLength
+buf_len         = bufferLength
+
+k               = key
+pk              = publicKey
+sk              = secretKey
+n               = nonce
+npub            = publicNonce
+nsec            = secretNonce
+ic              = counter
+h               = hash
+
+curve25519_pk   = curve25519PublicKey
+curve25519_sk   = curve25519SecretKey
+ed25519_pk      = ed25519PublicKey
+ed25519_sk      = ed25519SecretKey
+
+addr            = address
+ptr             = pointer
+len             = length
+
+memlimit        = memoryLimit
+opslimit        = operationsLimit
+
+ctx_            = context
+str             = string
+mac             = messageAuthenticationCode
