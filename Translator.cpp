@@ -35,7 +35,6 @@ namespace ApiScan
 				}
 			}
 
-			std::cout << Util::trim(key) << std::endl;
 			translations[Util::trim(key)] = Util::trim(replacement);
 		}
 	}
