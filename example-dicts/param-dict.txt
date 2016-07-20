@@ -60,3 +60,4 @@ opslimit        = operationsLimit
 ctx_            = context
 str             = string
 mac             = messageAuthenticationCode
+maclen_p        = messageAuthenticationCodeLengthPointer

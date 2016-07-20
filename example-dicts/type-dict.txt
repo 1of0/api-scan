@@ -11,9 +11,6 @@ unsigned char *const            = string
 const unsigned char *           = string
 const unsigned char *const      = string
 
-size_t                          = UInt64
-size_t *const                   = UInt64
-const size_t                    = UInt64
 unsigned long                   = UInt64
 unsigned long long              = UInt64
 unsigned long long *            = UInt64*

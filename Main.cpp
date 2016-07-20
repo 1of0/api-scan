@@ -49,12 +49,15 @@ int main(int argc, const char** argv)
 
 		for (string file : files)
 		{
-			string *result = xml.format(scanner.scan(file));
+			string *result = xml.format(scanner.scan(file), 1);
 			buffer += *result;
 			delete result;
 		}
 
+		std::cout << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << std::endl;
+		std::cout << "<library>" << std::endl;
 		std::cout << buffer;
+		std::cout << "</library>" << std::endl;
 	}
 	catch (TCLAP::ArgException &e)
 	{
