@@ -14,7 +14,7 @@ namespace ApiScan
 			}
 
 			FunctionInfo functionInfo(
-				funcTranslator.translate(functionDeclaration->getDeclName().getAsString()),
+				functionDeclaration->getDeclName().getAsString(),
 				typeTranslator.translate(functionDeclaration->getReturnType().getAsString())
 			);
 

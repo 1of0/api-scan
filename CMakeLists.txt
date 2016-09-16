@@ -6,13 +6,9 @@ project(api-scan)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
 
-set(SOURCE_FILES
-	Main.cpp Main.h
-	FunctionScanner.cpp FunctionScanner.h
-	FunctionInfoASTConsumer.cpp FunctionInfoASTConsumer.h
-	Translator.cpp Translator.h
-	XmlFormatter.cpp XmlFormatter.h
-	Util.cpp Util.h
+file(GLOB SOURCE_FILES
+    src/*.h
+    src/*.cpp
 )
 
 include_directories(

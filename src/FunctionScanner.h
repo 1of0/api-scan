@@ -42,7 +42,6 @@ namespace ApiScan
 		vector<string> getGccIncludes();
 
 	public:
-		void setFuncTranslator(Translator &funcTranslator) { this->astConsumer.setFuncTranslator(funcTranslator); }
 		void setParamTranslator(Translator &paramTranslator) { this->astConsumer.setParamTranslator(paramTranslator); }
 		void setTypeTranslator(Translator &typeTranslator) { this->astConsumer.setTypeTranslator(typeTranslator); }
 

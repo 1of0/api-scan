@@ -30,7 +30,6 @@ namespace ApiScan
 	class FunctionInfoASTConsumer: public ASTConsumer
 	{
 	private:
-		Translator funcTranslator;
 		Translator paramTranslator;
 		Translator typeTranslator;
 
@@ -41,12 +40,10 @@ namespace ApiScan
 	public:
 		FunctionInfoASTConsumer()
 		{
-			funcTranslator = NullTranslator();
 			paramTranslator = NullTranslator();
 			typeTranslator = NullTranslator();
 		}
 
-		void setFuncTranslator(Translator &funcTranslator) { this->funcTranslator = funcTranslator; }
 		void setParamTranslator(Translator &paramTranslator) { this->paramTranslator = paramTranslator; }
 		void setTypeTranslator(Translator &typeTranslator) { this->typeTranslator = typeTranslator; }
 

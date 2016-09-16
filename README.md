@@ -1,0 +1,62 @@
+# API-scan
+
+API-scan is a command-line utility that can analyze C source code and output a list of exported functions as XML. Such 
+data can be used to generate bindings in other programming languages.
+
+In addition, conversion dictionaries can be provided as arguments to automatically translate type-names or argument 
+names.
+
+## Usage
+
+```
+
+   api-scan  [-t <string>] [-p <string>] [--] [--version] [-h] <string> ...
+
+
+Where:
+
+   -t <string>,  --type-dict <string>
+     File containing translations for function types
+
+   -p <string>,  --param-dict <string>
+     File containing translations for parameter names
+
+   --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag.
+
+   --version
+     Displays version information and exits.
+
+   -h,  --help
+     Displays usage information and exits.
+
+   <string>  (accepted multiple times)
+     (required)  Source files to scan
+
+
+   Scans C code/header files for exposed functions, and returns a XML
+   formatted structure with function and parameter information.
+
+```
+
+## Project status
+
+This utility was designed to scan exported methods in [libsodium](https://github.com/jedisct1/libsodium). At the 
+moment that is also the only project on which this utility was tested.
+
+## Docker image
+
+```docker
+FROM 1of0/api-scan
+
+# ...
+
+CMD [ "api-scan", "/path/to/your/source" ]
+``` 
+
+## Todo
+
+- [ ] Support for struct
+- [ ] Support for enums
+- [ ] Test with other libraries
+- [ ] Support for consts

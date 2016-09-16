@@ -1,0 +1,5 @@
+test:
+  image: 1of0/llvm:3.8
+  script:
+  - git submodule update --init --recursive -f
+  - /bin/bash .docker-build.sh
