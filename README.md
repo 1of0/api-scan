@@ -51,12 +51,12 @@ FROM 1of0/api-scan
 
 # ...
 
-CMD [ "api-scan", "/path/to/your/source" ]
+ENTRYPOINT api-scan /path/to/your/sourcefiles
 ``` 
 
 ## Todo
 
-- [ ] Support for struct
+- [x] Support for struct
 - [ ] Support for enums
 - [ ] Test with other libraries
 - [ ] Support for consts

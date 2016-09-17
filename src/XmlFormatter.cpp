@@ -2,13 +2,13 @@
 
 namespace ApiScan
 {
-	string *XmlFormatter::format(vector<ApiScan::FunctionInfo> functions, uint level)
+	string *XmlFormatter::format(SourceInfo sourceInfo, uint level)
 	{
 		string *buffer = new string();
 
 		string indentation = getIndentation(level);
 
-		for (FunctionInfo function : functions)
+		for (FunctionInfo function : sourceInfo.getFunctions())
 		{
 			*buffer += indentation + "<function ";
 			*buffer += "name=\"" + function.getName() + "\" ";
@@ -23,6 +23,22 @@ namespace ApiScan
 				*buffer += " />\n";
 			}
 			*buffer += indentation + "</function>\n";
+		}
+
+		for (StructInfo structInfo : sourceInfo.getStructs())
+		{
+			*buffer += indentation + "<struct name=\"";
+			*buffer += structInfo.getName();
+			*buffer += "\">\n";
+
+			for (FieldInfo fieldInfo : structInfo.getFields())
+			{
+				*buffer += indentation + "\t<field ";
+				*buffer += "name=\"" + fieldInfo.getName() + "\" ";
+				*buffer += "type=\"" + fieldInfo.getType() + "\"";
+				*buffer += " />\n";
+			}
+			*buffer += indentation + "</struct>\n";
 		}
 
 		return buffer;

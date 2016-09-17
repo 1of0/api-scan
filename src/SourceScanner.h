@@ -11,7 +11,7 @@
 #include <clang/Parse/ParseAST.h>
 #include <clang/Parse/Parser.h>
 
-#include "FunctionInfoASTConsumer.h"
+#include "SourceInfoASTConsumer.h"
 
 using std::shared_ptr;
 using std::string;
@@ -34,17 +34,24 @@ using clang::TranslationUnitKind;
 
 namespace ApiScan
 {
-	class FunctionScanner
+	class SourceScanner
 	{
 	private:
-		FunctionInfoASTConsumer astConsumer;
+		CompilerInstance ci;
+
+		SourceInfoASTConsumer astConsumer;
 
 		vector<string> getGccIncludes();
 
 	public:
+		SourceScanner()
+		{
+			astConsumer.setCompilerInstance(&ci);
+		}
+
 		void setParamTranslator(Translator &paramTranslator) { this->astConsumer.setParamTranslator(paramTranslator); }
 		void setTypeTranslator(Translator &typeTranslator) { this->astConsumer.setTypeTranslator(typeTranslator); }
 
-		vector<FunctionInfo> scan(string file);
+		SourceInfo scan(string file);
 	};
 }

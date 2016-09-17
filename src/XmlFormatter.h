@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "FunctionInfoASTConsumer.h"
+#include "SourceInfoASTConsumer.h"
 
 using std::string;
 using std::vector;
@@ -16,6 +16,6 @@ namespace ApiScan
 		string getIndentation(uint level);
 
 	public:
-		string *format(vector<FunctionInfo> functions, uint indentation = 0);
+		string *format(SourceInfo sourceInfo, uint indentation = 0);
 	};
 }

@@ -21,7 +21,7 @@ int main(int argc, const char** argv)
 
 		cmd.parse(argc, argv);
 
-		FunctionScanner scanner;
+		SourceScanner scanner;
 
 		if (paramDictionary.isSet())
 		{

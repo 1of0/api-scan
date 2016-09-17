@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FunctionScanner.h"
+#include "SourceScanner.h"
 #include "Translator.h"
 #include "XmlFormatter.h"
 
@@ -9,7 +9,7 @@
 using std::string;
 using std::vector;
 
-using ApiScan::FunctionScanner;
+using ApiScan::SourceScanner;
 using ApiScan::FunctionInfo;
 using ApiScan::ParameterInfo;
 using ApiScan::Translator;
