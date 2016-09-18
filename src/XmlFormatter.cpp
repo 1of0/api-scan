@@ -2,59 +2,63 @@
 
 namespace ApiScan
 {
-	string *XmlFormatter::format(SourceInfo sourceInfo, uint level)
+	void XmlFormatter::outputHeader(ostream& stream)
 	{
-		string *buffer = new string();
+		stream << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << std::endl;
+	}
 
-		string indentation = getIndentation(level);
+	void XmlFormatter::outputFooter(ostream& stream)
+	{
+	}
+
+	void XmlFormatter::output(string fileName, SourceInfo sourceInfo, ostream& stream, bool isLastFile)
+	{
+		stream << "<file name=" << QUOTE(fileName) << ">" << std::endl;
 
 		for (FunctionInfo function : sourceInfo.getFunctions())
 		{
-			*buffer += indentation + "<function ";
-			*buffer += "name=\"" + function.getName() + "\" ";
-			*buffer += "type=\"" + function.getReturnType() + "\"";
-			*buffer += ">\n";
+			stream << I(1) 
+				<< "<function"
+				<< " name=" << QUOTE(function.getName()) 
+				<< " type=" << QUOTE(function.getReturnType()) 
+				<< ">" << std::endl
+			;
 
 			for (ParameterInfo parameter : function.getParameters())
 			{
-				*buffer += indentation + "\t<param ";
-				*buffer += "name=\"" + parameter.getName() + "\" ";
-				*buffer += "type=\"" + parameter.getType() + "\"";
-				*buffer += " />\n";
+				stream << I(2) 
+					<< "<param"
+					<< " name=" << QUOTE(parameter.getName()) 
+					<< " type=" << QUOTE(parameter.getType()) 
+					<< " />" << std::endl
+				;
 			}
-			*buffer += indentation + "</function>\n";
+
+			stream << I(1) << "</function>" << std::endl;
 		}
 
 		for (StructInfo structInfo : sourceInfo.getStructs())
 		{
-			*buffer += indentation + "<struct name=\"";
-			*buffer += structInfo.getName();
-			*buffer += "\">\n";
+			stream << I(1) 
+				<< "<struct"
+				<< " name=" << QUOTE(structInfo.getName())
+				<< ">" << std::endl
+			;
 
 			for (FieldInfo fieldInfo : structInfo.getFields())
 			{
-				*buffer += indentation + "\t<field ";
-				*buffer += "name=\"" + fieldInfo.getName() + "\" ";
-				*buffer += "type=\"" + fieldInfo.getType() + "\"";
-				*buffer += " />\n";
+				stream << I(2) 
+					<< "<field"
+					<< " name=" << QUOTE(fieldInfo.getName()) 
+					<< " type=" << QUOTE(fieldInfo.getType()) 
+					<< " />" << std::endl
+				;
 			}
-			*buffer += indentation + "</struct>\n";
+			
+			stream << I(1) << "</struct>" << std::endl;
 		}
 
-		return buffer;
-	}
-
-	string XmlFormatter::getIndentation(uint level)
-	{
-		char buffer[level + 1];
-
-		for (int i = 0; i < level; i++)
-		{
-			buffer[i] = '\t';
-		}
-		buffer[level] = '\0';
-
-		return string(buffer);
+		stream << "</file>" << std::endl;
 	}
 }
 

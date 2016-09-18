@@ -11,7 +11,7 @@ using std::vector;
 
 namespace ApiScan
 {
-	class XmlFormatter : public Formatter
+	class JsonFormatter : public Formatter
 	{
 	public:
 		void outputHeader(ostream& stream);
