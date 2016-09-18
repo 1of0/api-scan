@@ -11,7 +11,8 @@
 #include <clang/Parse/ParseAST.h>
 #include <clang/Parse/Parser.h>
 
-#include "SourceInfoASTConsumer.h"
+#include "DeclarationVisitor.h"
+#include "Translator.h"
 
 using std::shared_ptr;
 using std::string;
@@ -25,6 +26,7 @@ using clang::DiagnosticOptions;
 using clang::FileEntry;
 using clang::HeaderSearch;
 using clang::HeaderSearchOptions;
+using clang::IgnoringDiagConsumer;
 using clang::Parser;
 using clang::TargetInfo;
 using clang::TargetOptions;
@@ -36,22 +38,33 @@ namespace ApiScan
 {
 	class SourceScanner
 	{
+	friend class DeclarationVisitor;
 	private:
-		CompilerInstance ci;
+		Translator paramTranslator;
+		Translator typeTranslator;
+		Translator fieldTranslator;
 
-		SourceInfoASTConsumer astConsumer;
+		CompilerInstance compiler;
+		DeclarationVisitor *visitor;
+		SourceInfo sourceInfo;
 
 		vector<string> getGccIncludes();
 
 	public:
 		SourceScanner()
 		{
-			astConsumer.setCompilerInstance(&ci);
+			this->visitor = new DeclarationVisitor(this);
+			this->paramTranslator = NullTranslator();
+			this->typeTranslator = NullTranslator();
+			this->fieldTranslator = NullTranslator();
 		}
 
-		void setParamTranslator(Translator &paramTranslator) { this->astConsumer.setParamTranslator(paramTranslator); }
-		void setTypeTranslator(Translator &typeTranslator) { this->astConsumer.setTypeTranslator(typeTranslator); }
+		const SourceInfo getSourceInfo() { return this->sourceInfo; }
 
-		SourceInfo scan(string file);
+		void setTypeTranslator(Translator &typeTranslator) { this->typeTranslator = typeTranslator; }
+		void setParamTranslator(Translator &paramTranslator) { this->paramTranslator = paramTranslator; }
+		void setFieldTranslator(Translator &fieldTranslator) { this->fieldTranslator = fieldTranslator; }
+
+		void scan(const string file);
 	};
 }

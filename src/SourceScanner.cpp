@@ -2,40 +2,40 @@
 
 namespace ApiScan
 {
-	SourceInfo SourceScanner::scan(string file)
+	void SourceScanner::scan(const string file)
 	{
-		this->ci.createDiagnostics();
+		this->compiler.createDiagnostics();
+		
+		this->compiler.getDiagnostics().setClient(new IgnoringDiagConsumer());
 
 		shared_ptr<TargetOptions> targetOptions(new TargetOptions());
 		targetOptions->Triple = llvm::sys::getDefaultTargetTriple();
 
-		this->ci.setTarget(TargetInfo::CreateTargetInfo(this->ci.getDiagnostics(), targetOptions));
+		this->compiler.setTarget(TargetInfo::CreateTargetInfo(this->compiler.getDiagnostics(), targetOptions));
 
-		this->ci.createFileManager();
-		this->ci.createSourceManager(this->ci.getFileManager());
+		this->compiler.createFileManager();
+		this->compiler.createSourceManager(this->compiler.getFileManager());
 
 		for (string include : getGccIncludes())
 		{
-			this->ci.getHeaderSearchOpts().AddPath(include, clang::frontend::System, false, false);
+			this->compiler.getHeaderSearchOpts().AddPath(include, clang::frontend::System, false, false);
 		}
 
-		this->ci.createPreprocessor(TranslationUnitKind::TU_Complete);
-		this->ci.createASTContext();
+		this->compiler.createPreprocessor(TranslationUnitKind::TU_Complete);
+		this->compiler.createASTContext();
 
-		clang::FileID fileId = this->ci.getSourceManager().createFileID(
-			this->ci.getFileManager().getFile(file),
+		clang::FileID fileId = this->compiler.getSourceManager().createFileID(
+			this->compiler.getFileManager().getFile(file),
 			clang::SourceLocation(),
 			clang::SrcMgr::C_User
 		);
-		this->ci.getSourceManager().setMainFileID(fileId);
+		this->compiler.getSourceManager().setMainFileID(fileId);
+		
+		this->compiler.getDiagnosticClient().BeginSourceFile(this->compiler.getLangOpts(), &this->compiler.getPreprocessor());
 
-		this->ci.getDiagnosticClient().BeginSourceFile(this->ci.getLangOpts(), &this->ci.getPreprocessor());
+		clang::ParseAST(this->compiler.getPreprocessor(), this->visitor, this->compiler.getASTContext());
 
-		clang::ParseAST(this->ci.getPreprocessor(), &astConsumer, this->ci.getASTContext());
-
-		this->ci.getDiagnosticClient().EndSourceFile();
-
-		return astConsumer.getSourceInfo();
+		this->compiler.getDiagnosticClient().EndSourceFile();
 	}
 
 	vector<string> SourceScanner::getGccIncludes()

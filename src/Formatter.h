@@ -1,9 +1,11 @@
 #pragma once
 
+#include <map>
+#include <ostream>
 #include <string>
 #include <vector>
 
-#include "SourceInfoASTConsumer.h"
+#include "InfoTypes.h"
 
 #define I(x) I_ ## x
 #define I_1 "\t"
@@ -18,9 +20,10 @@
 
 #define QUOTE(x) "\"" + x + "\"" 
 
+using std::map;
+using std::ostream;
 using std::string;
 using std::vector;
-using std::ostream;
 
 namespace ApiScan
 {
@@ -31,6 +34,6 @@ namespace ApiScan
 		
 		virtual void outputFooter(ostream& stream) = 0;
 
-		virtual void output(string fileName, SourceInfo sourceInfo, ostream& stream, bool isLastFile) = 0;
+		virtual void output(const SourceInfo sourceInfo, ostream& stream) = 0;
 	};
 }

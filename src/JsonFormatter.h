@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "Formatter.h"
-#include "SourceInfoASTConsumer.h"
 
 using std::string;
 using std::vector;
@@ -18,6 +17,6 @@ namespace ApiScan
 		
 		void outputFooter(ostream& stream);
 
-		void output(string fileName, SourceInfo sourceInfo, ostream& stream, bool isLastFile);
+		void output(const SourceInfo sourceInfo, ostream& stream);
 	};
 }

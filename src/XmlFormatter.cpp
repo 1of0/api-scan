@@ -11,12 +11,14 @@ namespace ApiScan
 	{
 	}
 
-	void XmlFormatter::output(string fileName, SourceInfo sourceInfo, ostream& stream, bool isLastFile)
+	void XmlFormatter::output(const SourceInfo sourceInfo, ostream& stream)
 	{
-		stream << "<file name=" << QUOTE(fileName) << ">" << std::endl;
+		stream << "<api>" << std::endl;
 
-		for (FunctionInfo function : sourceInfo.getFunctions())
+		for (auto &kv : sourceInfo.getFunctions())
 		{
+			FunctionInfo function = kv.second;
+
 			stream << I(1) 
 				<< "<function"
 				<< " name=" << QUOTE(function.getName()) 
@@ -37,8 +39,10 @@ namespace ApiScan
 			stream << I(1) << "</function>" << std::endl;
 		}
 
-		for (StructInfo structInfo : sourceInfo.getStructs())
+		for (auto &kv : sourceInfo.getStructs())
 		{
+			StructInfo structInfo = kv.second;
+
 			stream << I(1) 
 				<< "<struct"
 				<< " name=" << QUOTE(structInfo.getName())
@@ -58,7 +62,7 @@ namespace ApiScan
 			stream << I(1) << "</struct>" << std::endl;
 		}
 
-		stream << "</file>" << std::endl;
+		stream << "</api>" << std::endl;
 	}
 }
 

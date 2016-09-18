@@ -7,7 +7,6 @@
 #include <clang/Frontend/CompilerInstance.h>
 
 #include "InfoTypes.h"
-#include "Translator.h"
 
 using clang::ASTConsumer;
 using clang::CompilerInstance;
@@ -17,41 +16,34 @@ using clang::FieldDecl;
 using clang::FunctionDecl;
 using clang::ParmVarDecl;
 using clang::RecordDecl;
+using clang::SourceLocation;
 using clang::VisibilityAttr;
 
 using llvm::dyn_cast;
 
 namespace ApiScan
 {
-	class SourceInfoASTConsumer;
+	class SourceScanner;
 
-	class SourceInfoASTConsumer: public ASTConsumer
+	class DeclarationVisitor : public ASTConsumer
 	{
 	private:
-		Translator paramTranslator;
-		Translator typeTranslator;
-		CompilerInstance *ci;
-
-		SourceInfo sourceInfo;
-
+		SourceScanner *parent;
+		
 		virtual bool HandleTopLevelDecl(DeclGroupRef declarations) override;
 
 		void VisitFunctionDeclaration(FunctionDecl *declaration);
 		void VisitRecordDeclaration(RecordDecl *declaration);
 
+		const string translateType(const string typeName);
+		const string translateParam(const string paramName);
+		const string translateField(const string fieldName);
+		bool isInSystemHeader(const SourceLocation location);
+
 	public:
-
-		SourceInfoASTConsumer()
+		DeclarationVisitor(SourceScanner *parent)
 		{
-			paramTranslator = NullTranslator();
-			typeTranslator = NullTranslator();
+			this->parent = parent;
 		}
-
-		void setParamTranslator(Translator &paramTranslator) { this->paramTranslator = paramTranslator; }
-		void setTypeTranslator(Translator &typeTranslator) { this->typeTranslator = typeTranslator; }
-		void setCompilerInstance(CompilerInstance *ci) { this->ci = ci; }
-
-		const SourceInfo &getSourceInfo() const { return this->sourceInfo; }
 	};
-
 }

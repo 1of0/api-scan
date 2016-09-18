@@ -11,11 +11,11 @@ namespace ApiScan
 			return;
 		}
 
-		for (std::string line; getline(stream, line);)
+		for (string line; getline(stream, line);)
 		{
 			bool afterSeparator = false;
-			std::string key;
-			std::string replacement;
+			string key;
+			string replacement;
 
 			for (int i = 0; i < line.length(); i++)
 			{
@@ -35,11 +35,11 @@ namespace ApiScan
 				}
 			}
 
-			translations[Util::trim(key)] = Util::trim(replacement);
+			translations[this->trim(key)] = this->trim(replacement);
 		}
 	}
 
-	string Translator::translate(const string value)
+	const string Translator::translate(const string value)
 	{
 		if (translations.count(value) > 0)
 		{
@@ -47,6 +47,29 @@ namespace ApiScan
 		}
 
 		return value;
+	}
+
+	const string Translator::trim(const string input)
+	{
+		unsigned long start;
+		for (start = 0; start < input.length(); start++)
+		{
+			if (input[start] != '\t' && input[start] != ' ')
+			{
+				break;
+			}
+		}
+
+		unsigned long end;
+		for (end = input.length(); end > 0; end--)
+		{
+			if (input[end - 1] != '\t' && input[end - 1] != ' ')
+			{
+				break;
+			}
+		}
+
+		return input.substr(start, end - start);
 	}
 }
 

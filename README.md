@@ -10,16 +10,23 @@ names.
 
 ```
 
-   api-scan  [-t <string>] [-p <string>] [--] [--version] [-h] <string> ...
+   api-scan  [-o <string>] [-f <string>] [-p <string>] [-t <string>] [--]
+             [--version] [-h] <string> ...
 
 
 Where:
 
-   -t <string>,  --type-dict <string>
-     File containing translations for function types
+   -o <string>,  --out-format <string>
+     Output format - xml/json
+
+   -f <string>,  --field-dict <string>
+     File containing translations for struct field names
 
    -p <string>,  --param-dict <string>
      File containing translations for parameter names
+
+   -t <string>,  --type-dict <string>
+     File containing translations for function types
 
    --,  --ignore_rest
      Ignores the rest of the labeled arguments following this flag.
@@ -34,8 +41,8 @@ Where:
      (required)  Source files to scan
 
 
-   Scans C code/header files for exposed functions, and returns a XML
-   formatted structure with function and parameter information.
+   Scans C code/header files for exposed functions and structs, and returns
+   function and type information as XML or JSON.
 
 ```
 
@@ -57,6 +64,9 @@ ENTRYPOINT api-scan /path/to/your/sourcefiles
 ## Todo
 
 - [x] Support for struct
+- [x] Add JSON output formatter
 - [ ] Support for enums
+- [ ] More input validation (file exists, etc.)
+- [ ] Un-break multi-file scanning
 - [ ] Test with other libraries
 - [ ] Support for consts

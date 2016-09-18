@@ -17,24 +17,23 @@ namespace ApiScan
 	private:
 		map<string, string> translations;
 
+		const string trim(const string input);
+
 	public:
 		Translator() { }
 		Translator(const string source) { load(source); }
 
 		virtual void load(const string file);
 
-		virtual string translate(const string value);
+		virtual const string translate(const string value);
 	};
 
 	class NullTranslator : public Translator
 	{
 	public:
-		virtual void load(const string file) override
-		{
-			Translator::load(file);
-		}
+		virtual void load(const string file) override { }
 
-		virtual string translate(const string value) override
+		virtual const string translate(const string value) override
 		{
 			return value;
 		}

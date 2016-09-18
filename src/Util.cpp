@@ -26,29 +26,6 @@ namespace ApiScan
 
 			return result;
 		}
-
-		string trim(string input)
-		{
-			unsigned long start;
-			for (start = 0; start < input.length(); start++)
-			{
-				if (input[start] != '\t' && input[start] != ' ')
-				{
-					break;
-				}
-			}
-
-			unsigned long end;
-			for (end = input.length(); end > 0; end--)
-			{
-				if (input[end - 1] != '\t' && input[end - 1] != ' ')
-				{
-					break;
-				}
-			}
-
-			return input.substr(start, end - start);
-		}
 	}
 }
 

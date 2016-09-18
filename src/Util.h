@@ -12,6 +12,5 @@ namespace ApiScan
 	namespace Util
 	{
 		string executeCommand(string command);
-		string trim(string input);
 	}
 }

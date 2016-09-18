@@ -12,19 +12,27 @@ int main(int argc, const char** argv)
 
 		TCLAP::UnlabeledMultiArg<string> argSourceFiles("source-files", "Source files to scan", true, "string");
 
-		TCLAP::ValueArg<string> argParamDictionary("p", "param-dict", "File containing translations for parameter names", false, "", "string");
 		TCLAP::ValueArg<string> argTypeDictionary("t", "type-dict", "File containing translations for function types", false, "", "string");
+		TCLAP::ValueArg<string> argParamDictionary("p", "param-dict", "File containing translations for parameter names", false, "", "string");
+		TCLAP::ValueArg<string> argFieldDictionary("f", "field-dict", "File containing translations for struct field names", false, "", "string");
 
-		TCLAP::ValueArg<string> argFormat("f", "format", "Output format - xml/json", false, "xml", "string");
+		TCLAP::ValueArg<string> argFormat("o", "out-format", "Output format - xml/json", false, "xml", "string");
 
 		cmd.add(argSourceFiles);
-		cmd.add(argParamDictionary);
 		cmd.add(argTypeDictionary);
+		cmd.add(argParamDictionary);
+		cmd.add(argFieldDictionary);
 		cmd.add(argFormat);
 
 		cmd.parse(argc, argv);
 
 		SourceScanner scanner;
+
+		if (argTypeDictionary.isSet())
+		{
+			Translator typeTranslator = Translator(argTypeDictionary.getValue());
+			scanner.setTypeTranslator(typeTranslator);
+		}
 
 		if (argParamDictionary.isSet())
 		{
@@ -32,10 +40,10 @@ int main(int argc, const char** argv)
 			scanner.setParamTranslator(paramTranslator);
 		}
 
-		if (argTypeDictionary.isSet())
+		if (argFieldDictionary.isSet())
 		{
-			Translator typeTranslator = Translator(argTypeDictionary.getValue());
-			scanner.setTypeTranslator(typeTranslator);
+			Translator fieldTranslator = Translator(argFieldDictionary.getValue());
+			scanner.setFieldTranslator(fieldTranslator);
 		}
 
 		Formatter *formatter;
@@ -51,15 +59,13 @@ int main(int argc, const char** argv)
 
 		vector<string> files = argSourceFiles.getValue();
 
-		formatter->outputHeader(std::cout);
-
-		int numFiles = files.size();
-		for (int i = 0; i < numFiles; i++)
+		for (string file : files)
 		{
-			string file = files.at(i);
-			formatter->output(file, scanner.scan(file), std::cout, i == numFiles - 1);
+			scanner.scan(file);
 		}
 
+		formatter->outputHeader(std::cout);
+		formatter->output(scanner.getSourceInfo(), std::cout);
 		formatter->outputFooter(std::cout);
 	}
 	catch (TCLAP::ArgException &e)

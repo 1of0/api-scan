@@ -2,9 +2,11 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 using std::string;
 using std::vector;
+using std::map;
 
 namespace ApiScan
 {
@@ -13,27 +15,6 @@ namespace ApiScan
 	class ParameterInfo;
 	class StructInfo;
 	class FieldInfo;
-
-	class SourceInfo
-	{
-	private:
-		vector<FunctionInfo> functions;
-		vector<StructInfo> structs;
-
-	public:
-		const vector<FunctionInfo> &getFunctions() const { return this->functions; }
-		const vector<StructInfo> &getStructs() const { return this->structs; }
-		
-		void addFunction(const FunctionInfo &functionInfo)
-		{
-			this->functions.push_back(functionInfo);
-		}
-		
-		void addStruct(const StructInfo &structInfo)
-		{
-			this->structs.push_back(structInfo);
-		}
-	};
 
 	class FunctionInfo
 	{
@@ -104,5 +85,36 @@ namespace ApiScan
 
 		const string &getName() const { return this->name; }
 		const string &getType() const { return this->type; }
+	};
+
+	class SourceInfo
+	{
+	private:
+		map<string, FunctionInfo> functions;
+		map<string, StructInfo> structs;
+
+	public:
+		const map<string, FunctionInfo> &getFunctions() const { return this->functions; }
+		const map<string, StructInfo> &getStructs() const { return this->structs; }
+		
+		void addFunction(const FunctionInfo &functionInfo)
+		{
+			if (functions.count(functionInfo.getName()))
+			{
+				return;
+			}
+
+			this->functions[functionInfo.getName()] = functionInfo;
+		}
+		
+		void addStruct(const StructInfo &structInfo)
+		{
+			if (structs.count(structInfo.getName()))
+			{
+				return;
+			}
+
+			this->structs[structInfo.getName()] = structInfo;
+		}
 	};
 }
