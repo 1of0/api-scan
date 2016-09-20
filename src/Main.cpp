@@ -63,10 +63,11 @@ int main(int argc, const char** argv)
 		{
 			scanner.scan(file);
 		}
-
+/*
 		formatter->outputHeader(std::cout);
 		formatter->output(scanner.getSourceInfo(), std::cout);
 		formatter->outputFooter(std::cout);
+*/
 	}
 	catch (TCLAP::ArgException &e)
 	{

@@ -24,6 +24,9 @@ namespace ApiScan
 		this->compiler.createPreprocessor(TranslationUnitKind::TU_Complete);
 		this->compiler.createASTContext();
 
+		Preprocessor &preprocessor = this->compiler.getPreprocessor();
+		//preprocessor.addPPCallbacks(std::unique_ptr<PPCallbacks>(new PreProcessorVisitor(this)));
+
 		clang::FileID fileId = this->compiler.getSourceManager().createFileID(
 			this->compiler.getFileManager().getFile(file),
 			clang::SourceLocation(),
@@ -31,11 +34,13 @@ namespace ApiScan
 		);
 		this->compiler.getSourceManager().setMainFileID(fileId);
 		
-		this->compiler.getDiagnosticClient().BeginSourceFile(this->compiler.getLangOpts(), &this->compiler.getPreprocessor());
+		this->compiler.getDiagnosticClient().BeginSourceFile(this->compiler.getLangOpts(), &preprocessor);
 
-		clang::ParseAST(this->compiler.getPreprocessor(), this->visitor, this->compiler.getASTContext());
+		clang::ParseAST(preprocessor, this->visitor, this->compiler.getASTContext());
 
 		this->compiler.getDiagnosticClient().EndSourceFile();
+
+		DoPrintMacros(preprocessor, &llvm::outs());
 	}
 
 	vector<string> SourceScanner::getGccIncludes()
