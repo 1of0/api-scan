@@ -47,7 +47,7 @@ namespace ApiScan
 
 			stream << I(2) << "{" << std::endl;
 			stream << I(3) << "\"name\": " << QUOTE(function.name) << "," << std::endl;
-			stream << I(3) << "\"type\": " << QUOTE(function.returnType) << "," << std::endl;
+			stream << I(3) << "\"returnType\": " << QUOTE(function.returnType) << "," << std::endl;
 
 			if (function.parameters.size() == 0)
 			{

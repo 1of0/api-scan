@@ -31,7 +31,7 @@ namespace ApiScan
 			stream << I(1)
 				<< "<function"
 				<< " name=" << QUOTE(function.name)
-				<< " type=" << QUOTE(function.returnType)
+				<< " returnType=" << QUOTE(function.returnType)
 				<< ">" << std::endl
 			;
 
