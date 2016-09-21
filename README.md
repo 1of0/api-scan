@@ -65,8 +65,11 @@ ENTRYPOINT api-scan /path/to/your/sourcefiles
 
 - [x] Support for struct
 - [x] Add JSON output formatter
+- [x] Support for `#define`s
+- [ ] C API
 - [ ] Support for enums
 - [ ] More input validation (file exists, etc.)
 - [ ] Un-break multi-file scanning
 - [ ] Test with other libraries
 - [ ] Support for consts
+- [ ] Improve escaping in formatter

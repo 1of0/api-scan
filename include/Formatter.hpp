@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "InfoTypes.h"
+#include "InfoTypes.hpp"
 
 #define I(x) I_ ## x
 #define I_1 "\t"
@@ -18,7 +18,11 @@
 #define I_8 "\t\t\t\t\t\t\t\t"
 #define I_9 "\t\t\t\t\t\t\t\t\t"
 
-#define QUOTE(x) "\"" + x + "\"" 
+#define IS_QUOTED(x) (x.front() == '"' && x.back() == '"')
+#define QUOTE(x) ("\"" + x + "\"")
+#define UNQOUTE(x) (x.substr(1, x.length() - 2))
+#define JSON_QUOTE(x) ("\\\"" + x + "\\\"")
+#define XML_QUOTE(x) ("&quot;" + x + "&quot;")
 
 using std::map;
 using std::ostream;
@@ -31,9 +35,9 @@ namespace ApiScan
 	{
 	public:
 		virtual void outputHeader(ostream& stream) = 0;
-		
+
 		virtual void outputFooter(ostream& stream) = 0;
 
-		virtual void output(const SourceInfo sourceInfo, ostream& stream) = 0;
+		virtual void output(const SourceMap sourceMap, ostream& stream) = 0;
 	};
 }

@@ -1,4 +1,4 @@
-#include "Util.h"
+#include "Util.hpp"
 
 namespace ApiScan
 {
@@ -25,6 +25,38 @@ namespace ApiScan
 			}
 
 			return result;
+		}
+
+		vector<string> getGccIncludes()
+		{
+			string result = executeCommand("echo | gcc -Wp,-v -x c - -fsyntax-only 2>&1");
+			vector<string> includes;
+
+			stringstream stream(result);
+			string line;
+			bool listingIncludes = false;
+
+			while (std::getline(stream, line, '\n'))
+			{
+				if (line == "#include \\\"...\\\" search starts here:" || line == "#include <...> search starts here:")
+				{
+					listingIncludes = true;
+					continue;
+				}
+
+				if (line == "End of search list.")
+				{
+					listingIncludes = false;
+					continue;
+				}
+
+				if (listingIncludes)
+				{
+					includes.push_back(line.substr(1));
+				}
+			}
+
+			return includes;
 		}
 	}
 }

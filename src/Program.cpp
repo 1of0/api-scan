@@ -1,4 +1,21 @@
-#include "Main.h"
+#include "SourceScanner.hpp"
+#include "Translator.hpp"
+#include "JsonFormatter.hpp"
+#include "XmlFormatter.hpp"
+
+#include "tclap/CmdLine.h"
+
+using std::string;
+using std::vector;
+
+using ApiScan::SourceScanner;
+using ApiScan::Translator;
+using ApiScan::Formatter;
+using ApiScan::XmlFormatter;
+using ApiScan::JsonFormatter;
+
+using TCLAP::CmdLine;
+using TCLAP::UnlabeledMultiArg;
 
 int main(int argc, const char** argv)
 {
@@ -30,20 +47,17 @@ int main(int argc, const char** argv)
 
 		if (argTypeDictionary.isSet())
 		{
-			Translator typeTranslator = Translator(argTypeDictionary.getValue());
-			scanner.setTypeTranslator(typeTranslator);
+			scanner.getTranslator().load(ApiScan::DictType, argTypeDictionary.getValue());
 		}
 
 		if (argParamDictionary.isSet())
 		{
-			Translator paramTranslator = Translator(argParamDictionary.getValue());
-			scanner.setParamTranslator(paramTranslator);
+			scanner.getTranslator().load(ApiScan::DictParam, argParamDictionary.getValue());
 		}
 
 		if (argFieldDictionary.isSet())
 		{
-			Translator fieldTranslator = Translator(argFieldDictionary.getValue());
-			scanner.setFieldTranslator(fieldTranslator);
+			scanner.getTranslator().load(ApiScan::DictField, argFieldDictionary.getValue());
 		}
 
 		Formatter *formatter;
@@ -63,11 +77,10 @@ int main(int argc, const char** argv)
 		{
 			scanner.scan(file);
 		}
-/*
+
 		formatter->outputHeader(std::cout);
-		formatter->output(scanner.getSourceInfo(), std::cout);
+		formatter->output(scanner.getSourceMap(), std::cout);
 		formatter->outputFooter(std::cout);
-*/
 	}
 	catch (TCLAP::ArgException &e)
 	{

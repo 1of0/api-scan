@@ -1,15 +1,17 @@
-#include "Translator.h"
+#include "Translator.hpp"
 
 namespace ApiScan
 {
-	void Translator::load(const string file)
+	void Translator::load(Dictionary dictionary, const string file)
 	{
 		ifstream stream(file);
 
-		if (!stream)
+		if (!stream || !stream.good())
 		{
 			return;
 		}
+
+		dictionaries[dictionary] = map<string, string>();
 
 		for (string line; getline(stream, line);)
 		{
@@ -17,7 +19,7 @@ namespace ApiScan
 			string key;
 			string replacement;
 
-			for (int i = 0; i < line.length(); i++)
+			for (unsigned int i = 0; i < line.length(); i++)
 			{
 				if (line[i] == '=')
 				{
@@ -35,18 +37,18 @@ namespace ApiScan
 				}
 			}
 
-			translations[this->trim(key)] = this->trim(replacement);
+			dictionaries[dictionary][this->trim(key)] = this->trim(replacement);
 		}
 	}
 
-	const string Translator::translate(const string value)
+	const string Translator::translate(Dictionary dictionary, const string value)
 	{
-		if (translations.count(value) > 0)
+		if (dictionaries.count(dictionary) == 0 || dictionaries[dictionary].count(value) == 0)
 		{
-			return translations[value];
+			return value;
 		}
 
-		return value;
+		return dictionaries[dictionary][value];
 	}
 
 	const string Translator::trim(const string input)

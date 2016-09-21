@@ -1,4 +1,4 @@
-#include "JsonFormatter.h"
+#include "JsonFormatter.hpp"
 
 namespace ApiScan
 {
@@ -12,41 +12,33 @@ namespace ApiScan
 		stream << "}" << std::endl;
 	}
 
-	void JsonFormatter::output(const SourceInfo sourceInfo, ostream& stream)
+	void JsonFormatter::output(const SourceMap sourceMap, ostream& stream)
 	{
-		stream << I(1) << "\"functions\": [" << std::endl;
+		unsigned int i = 0;
 
-		int i = 0;
-		for (auto &kv : sourceInfo.getFunctions())
+		stream << I(1) << "\"defines\": [" << std::endl;
+
+		i = 0;
+		for (auto &kv : sourceMap.getDefineMap())
 		{
-			FunctionInfo function = kv.second;
+			DefineInfo defineInfo = kv.second;
 
-			stream << I(2) << "{" << std::endl;
-			stream << I(3) << "\"name\": " << QUOTE(function.getName()) << "," << std::endl;
-			stream << I(3) << "\"type\": " << QUOTE(function.getReturnType()) << "," << std::endl;
-			stream << I(3) << "\"params\": [" << std::endl;
+			stream << I(2) << "{ ";
+			stream << "\"name\": " << QUOTE(defineInfo.name) << ", ";
+			stream << "\"value\": ";
 
-			for (int j = 0; j < function.getParameters().size(); j++)
+			if (IS_QUOTED(defineInfo.expansion))
 			{
-				ParameterInfo parameter = function.getParameters().at(j);
-
-				stream << I(4) << "{" << std::endl;
-				stream << I(5) << "\"name\": " << QUOTE(parameter.getName()) << "," << std::endl;
-				stream << I(5) << "\"type\": " << QUOTE(parameter.getType()) << "" << std::endl;
-				stream << I(4) << "}";
-
-				if (j < function.getParameters().size() - 1)
-				{
-					stream << ",";
-				}
-
-				stream << std::endl;
+				stream << QUOTE(JSON_QUOTE(UNQOUTE(defineInfo.expansion)));
+			}
+			else
+			{
+				stream << QUOTE(defineInfo.expansion);
 			}
 
-			stream << I(3) << "]" << std::endl;
-			stream << I(2) << "}";
+			stream << " }";
 
-			if (i < sourceInfo.getFunctions().size() - 1)
+			if (i < sourceMap.getDefineMap().size() - 1)
 			{
 				stream << ",";
 			}
@@ -54,40 +46,98 @@ namespace ApiScan
 			stream << std::endl;
 			i++;
 		}
-		
+
+		stream << I(1) << "]," << std::endl;
+		stream << I(1) << "\"functions\": [" << std::endl;
+
+		i = 0;
+		for (auto &kv : sourceMap.getFunctionMap())
+		{
+			FunctionInfo function = kv.second;
+
+			stream << I(2) << "{" << std::endl;
+			stream << I(3) << "\"name\": " << QUOTE(function.name) << "," << std::endl;
+			stream << I(3) << "\"type\": " << QUOTE(function.returnType) << "," << std::endl;
+
+			if (function.parameters.size() == 0)
+			{
+				stream << I(3) << "\"params\": []" << std::endl;
+			}
+			else
+			{
+				stream << I(3) << "\"params\": [" << std::endl;
+
+				for (unsigned int j = 0; j < function.parameters.size(); j++)
+				{
+					ParameterInfo parameter = function.parameters.at(j);
+
+					stream << I(4) << "{" << std::endl;
+					stream << I(5) << "\"name\": " << QUOTE(parameter.name) << "," << std::endl;
+					stream << I(5) << "\"type\": " << QUOTE(parameter.type) << "" << std::endl;
+					stream << I(4) << "}";
+
+					if (j < function.parameters.size() - 1)
+					{
+						stream << ",";
+					}
+
+					stream << std::endl;
+				}
+
+				stream << I(3) << "]" << std::endl;
+			}
+			stream << I(2) << "}";
+
+			if (i < sourceMap.getFunctionMap().size() - 1)
+			{
+				stream << ",";
+			}
+
+			stream << std::endl;
+			i++;
+		}
+
 		stream << I(1) << "]," << std::endl;
 		stream << I(1) << "\"structs\": [" << std::endl;
 
 		i = 0;
-		for (auto &kv : sourceInfo.getStructs())
+		for (auto &kv : sourceMap.getStructMap())
 		{
 			StructInfo structInfo = kv.second;
 
 			stream << I(2) << "{" << std::endl;
-			stream << I(3) << "\"name\": " << QUOTE(structInfo.getName()) << "," << std::endl;
-			stream << I(3) << "\"fields\": [" << std::endl;
+			stream << I(3) << "\"name\": " << QUOTE(structInfo.name) << "," << std::endl;
 
-			for (int j = 0; j < structInfo.getFields().size(); j++)
+			if (structInfo.fields.size() == 0)
 			{
-				FieldInfo fieldInfo =  structInfo.getFields().at(j);
+				stream << I(3) << "\"fields\": []" << std::endl;
+			}
+			else
+			{
+				stream << I(3) << "\"fields\": [" << std::endl;
 
-				stream << I(4) << "{" << std::endl;
-				stream << I(5) << "\"name\": " << QUOTE(fieldInfo.getName()) << "," << std::endl;
-				stream << I(5) << "\"type\": " << QUOTE(fieldInfo.getType()) << "" << std::endl;
-				stream << I(4) << "}";
-
-				if (j <  structInfo.getFields().size() - 1)
+				for (unsigned int j = 0; j < structInfo.fields.size(); j++)
 				{
-					stream << ",";
+					FieldInfo fieldInfo =  structInfo.fields.at(j);
+
+					stream << I(4) << "{" << std::endl;
+					stream << I(5) << "\"name\": " << QUOTE(fieldInfo.name) << "," << std::endl;
+					stream << I(5) << "\"type\": " << QUOTE(fieldInfo.type) << "" << std::endl;
+					stream << I(4) << "}";
+
+					if (j <  structInfo.fields.size() - 1)
+					{
+						stream << ",";
+					}
+
+					stream << std::endl;
 				}
 
-				stream << std::endl;
-			}			
-
-			stream << I(3) << "]" << std::endl;
+				stream << I(3) << "]" << std::endl;
+			}
 			stream << I(2) << "}";
 
-			if (i < sourceInfo.getStructs().size() - 1)
+			if (i < sourceMap.getStructMap().size() - 1)
 			{
 				stream << ",";
 			}

@@ -7,11 +7,11 @@ project(api-scan)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
 
 file(GLOB SOURCE_FILES
-    src/*.h
     src/*.cpp
 )
 
 include_directories(
+    ${CMAKE_SOURCE_DIR}/include
 	${CMAKE_SOURCE_DIR}/libs/tclap/include
 )
 
