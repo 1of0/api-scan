@@ -15,6 +15,8 @@ namespace ApiScan
 {
 	namespace Util
 	{
+		string &replaceAll(string &subject, const string &search, const string &replacement);
+
 		string executeCommand(string command);
 
 		vector<string> getGccIncludes();

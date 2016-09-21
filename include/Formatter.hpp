@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "InfoTypes.hpp"
+#include "Util.hpp"
 
 #define I(x) I_ ## x
 #define I_1 "\t"
@@ -18,11 +19,9 @@
 #define I_8 "\t\t\t\t\t\t\t\t"
 #define I_9 "\t\t\t\t\t\t\t\t\t"
 
-#define IS_QUOTED(x) (x.front() == '"' && x.back() == '"')
 #define QUOTE(x) ("\"" + x + "\"")
 #define UNQOUTE(x) (x.substr(1, x.length() - 2))
-#define JSON_QUOTE(x) ("\\\"" + x + "\\\"")
-#define XML_QUOTE(x) ("&quot;" + x + "&quot;")
+#define JSON_ESCAPE(x) ApiScan::Util::replaceAll(x, "\"", "\\\"")
 
 using std::map;
 using std::ostream;

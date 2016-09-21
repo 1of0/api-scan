@@ -25,17 +25,7 @@ namespace ApiScan
 
 			stream << I(2) << "{ ";
 			stream << "\"name\": " << QUOTE(defineInfo.name) << ", ";
-			stream << "\"value\": ";
-
-			if (IS_QUOTED(defineInfo.expansion))
-			{
-				stream << QUOTE(JSON_QUOTE(UNQOUTE(defineInfo.expansion)));
-			}
-			else
-			{
-				stream << QUOTE(defineInfo.expansion);
-			}
-
+			stream << "\"value\": " << QUOTE(JSON_ESCAPE(defineInfo.expansion));
 			stream << " }";
 
 			if (i < sourceMap.getDefineMap().size() - 1)

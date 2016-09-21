@@ -4,6 +4,21 @@ namespace ApiScan
 {
 	namespace Util
 	{
+		string &replaceAll(string &subject, const string &search, const string &replacement)
+		{
+			if (subject.empty() || search.empty())
+			{
+				return subject;
+			}
+
+			for (size_t start = 0; (start = subject.find(search, start)) != string::npos; start += replacement.length())
+			{
+				subject.replace(start, search.length(), replacement);
+			}
+
+			return subject;
+		}
+
 		string executeCommand(string command)
 		{
 			shared_ptr<FILE> pipe(popen(command.c_str(), "r"), pclose);

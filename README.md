@@ -59,7 +59,7 @@ FROM 1of0/api-scan
 # ...
 
 ENTRYPOINT api-scan /path/to/your/sourcefiles
-``` 
+```
 
 ## Todo
 
@@ -72,4 +72,3 @@ ENTRYPOINT api-scan /path/to/your/sourcefiles
 - [ ] Un-break multi-file scanning
 - [ ] Test with other libraries
 - [ ] Support for consts
-- [ ] Improve escaping in formatter
