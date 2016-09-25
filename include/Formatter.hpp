@@ -20,6 +20,7 @@
 #define I_9 "\t\t\t\t\t\t\t\t\t"
 
 #define QUOTE(x) ("\"" + x + "\"")
+#define STREAM_QUOTE(x) "\"" << x << "\""
 #define UNQOUTE(x) (x.substr(1, x.length() - 2))
 #define JSON_ESCAPE(x) ApiScan::Util::replaceAll(x, "\"", "\\\"")
 

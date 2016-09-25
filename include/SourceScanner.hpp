@@ -45,6 +45,8 @@ namespace ApiScan
 		void handleFunctionDeclaration(clang::FunctionDecl *declaration);
 		void handleRecordDeclaration(clang::RecordDecl *declaration);
 
+		TypeInfo getTypeInfo(const clang::QualType &type);
+
 		bool isLocationInScope(const clang::SourceLocation location);
 
 	public:

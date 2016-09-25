@@ -10,16 +10,22 @@ using std::map;
 
 namespace ApiScan
 {
+	struct TypeInfo
+	{
+		string name;
+		unsigned int constantArraySize;
+	};
+
 	struct ParameterInfo
 	{
 		string name;
-		string type;
+		TypeInfo type;
 	};
 
 	struct FieldInfo
 	{
 		string name;
-		string type;
+		TypeInfo type;
 	};
 
 	struct DefineInfo
@@ -31,7 +37,8 @@ namespace ApiScan
 	struct FunctionInfo
 	{
 		string name;
-		string returnType;
+		TypeInfo returnType;
+
 		vector<ParameterInfo> parameters;
 	};
 

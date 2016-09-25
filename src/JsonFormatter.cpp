@@ -47,7 +47,12 @@ namespace ApiScan
 
 			stream << I(2) << "{" << std::endl;
 			stream << I(3) << "\"name\": " << QUOTE(function.name) << "," << std::endl;
-			stream << I(3) << "\"returnType\": " << QUOTE(function.returnType) << "," << std::endl;
+			stream << I(3) << "\"returnType\": " << QUOTE(function.returnType.name) << "," << std::endl;
+
+			if (function.returnType.constantArraySize)
+			{
+				stream << I(3) << "\"returnConstantArraySize\": " << function.returnType.constantArraySize << "," << std::endl;
+			}
 
 			if (function.parameters.size() == 0)
 			{
@@ -63,7 +68,16 @@ namespace ApiScan
 
 					stream << I(4) << "{" << std::endl;
 					stream << I(5) << "\"name\": " << QUOTE(parameter.name) << "," << std::endl;
-					stream << I(5) << "\"type\": " << QUOTE(parameter.type) << "" << std::endl;
+					stream << I(5) << "\"type\": " << QUOTE(parameter.type.name);
+
+					if (parameter.type.constantArraySize)
+					{
+						stream << "," << std::endl;
+						stream << I(5) << "\"constantArraySize\": " << parameter.type.constantArraySize;
+					}
+
+					stream << std::endl;
+
 					stream << I(4) << "}";
 
 					if (j < function.parameters.size() - 1)
@@ -112,7 +126,16 @@ namespace ApiScan
 
 					stream << I(4) << "{" << std::endl;
 					stream << I(5) << "\"name\": " << QUOTE(fieldInfo.name) << "," << std::endl;
-					stream << I(5) << "\"type\": " << QUOTE(fieldInfo.type) << "" << std::endl;
+					stream << I(5) << "\"type\": " << QUOTE(fieldInfo.type.name);
+
+					if (fieldInfo.type.constantArraySize)
+					{
+						stream << "," << std::endl;
+						stream << I(5) << "\"constantArraySize\": " << fieldInfo.type.constantArraySize;
+					}
+
+					stream << std::endl;
+
 					stream << I(4) << "}";
 
 					if (j <  structInfo.fields.size() - 1)

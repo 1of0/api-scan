@@ -140,13 +140,13 @@ namespace ApiScan
 	{
 		FunctionInfo functionInfo;
 		functionInfo.name = declaration->getDeclName().getAsString();
-		functionInfo.returnType = translator.translate(DictType, declaration->getReturnType().getAsString());
+		functionInfo.returnType = getTypeInfo(declaration->getReturnType());
 
 		for (const clang::ParmVarDecl *parameterDeclaration : declaration->parameters())
 		{
 			ParameterInfo parameterInfo;
 			parameterInfo.name = translator.translate(DictParam, parameterDeclaration->getDeclName().getAsString());
-			parameterInfo.type = translator.translate(DictType, parameterDeclaration->getType().getAsString());
+			parameterInfo.type = getTypeInfo(parameterDeclaration->getType());
 
 			functionInfo.parameters.push_back(parameterInfo);
 		}
@@ -163,12 +163,32 @@ namespace ApiScan
 		{
 			FieldInfo fieldInfo;
 			fieldInfo.name = translator.translate(DictField, fieldDeclaration->getDeclName().getAsString());
-			fieldInfo.type = translator.translate(DictType, fieldDeclaration->getType().getAsString());
+			fieldInfo.type = getTypeInfo(fieldDeclaration->getType());
 
 			structInfo.fields.push_back(fieldInfo);
 		}
 
 		sourceMap.addStruct(structInfo);
+	}
+
+	TypeInfo SourceScanner::getTypeInfo(const clang::QualType &type)
+	{
+		TypeInfo typeInfo;
+
+		typeInfo.name = translator.translate(DictType, type.getCanonicalType().getAsString());
+		typeInfo.constantArraySize = 0;
+
+		if (type->getAs<clang::DecayedType>())
+		{
+			const clang::ConstantArrayType *arrayInfo = clang::dyn_cast<clang::ConstantArrayType>(type->getAs<clang::DecayedType>()->getOriginalType());
+
+			if (arrayInfo)
+			{
+				typeInfo.constantArraySize = arrayInfo->getSize().getZExtValue();
+			}
+		}
+
+		return typeInfo;
 	}
 
 	bool SourceScanner::isLocationInScope(const clang::SourceLocation location)
