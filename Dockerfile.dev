@@ -1,0 +1,8 @@
+FROM 1of0/llvm
+
+VOLUME /var/ccache
+
+WORKDIR /var/build
+ADD ./ /var/build/
+
+CMD /var/build/.docker-build.sh
