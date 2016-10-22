@@ -20,12 +20,16 @@ namespace ApiScan
 	{
 		string name;
 		TypeInfo type;
+		unsigned int alignment;
 	};
 
 	struct FieldInfo
 	{
 		string name;
 		TypeInfo type;
+		unsigned int alignment;
+		bool offsetDefined;
+		unsigned long offset;
 	};
 
 	struct DefineInfo
@@ -38,7 +42,6 @@ namespace ApiScan
 	{
 		string name;
 		TypeInfo returnType;
-
 		vector<ParameterInfo> parameters;
 	};
 
@@ -48,17 +51,26 @@ namespace ApiScan
 		vector<FieldInfo> fields;
 	};
 
+	struct TypedefInfo
+	{
+		string name;
+		TypeInfo type;
+		unsigned int alignment;
+	};
+
 	class SourceMap
 	{
 	private:
 		map<string, FunctionInfo> functionMap;
 		map<string, StructInfo> structMap;
 		map<string, DefineInfo> defineMap;
+		map<string, TypedefInfo> typedefMap;
 
 	public:
 		const map<string, FunctionInfo> &getFunctionMap() const { return functionMap; }
 		const map<string, StructInfo> &getStructMap() const { return structMap; }
 		const map<string, DefineInfo> &getDefineMap() const { return defineMap; }
+		const map<string, TypedefInfo> &getTypedefMap() const { return typedefMap; }
 
 		void addFunction(const FunctionInfo &item)
 		{
@@ -85,6 +97,15 @@ namespace ApiScan
 				return;
 			}
 			defineMap[item.name] = item;
+		}
+
+		void addTypedef(const TypedefInfo &item)
+		{
+			if (typedefMap.count(item.name) > 0)
+			{
+				return;
+			}
+			typedefMap[item.name] = item;
 		}
 	};
 }

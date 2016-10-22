@@ -122,6 +122,7 @@ namespace ApiScan
 		{
 			clang::FunctionDecl *functionDeclaration = clang::dyn_cast<clang::FunctionDecl>(item);
 			clang::RecordDecl *recordDeclaration = clang::dyn_cast<clang::RecordDecl>(item);
+			clang::TypedefNameDecl *typedefDeclaration = clang::dyn_cast<clang::TypedefNameDecl>(item);
 
 			if (functionDeclaration && functionDeclaration->hasAttr<clang::VisibilityAttr>() && isLocationInScope(functionDeclaration->getLocStart()))
 			{
@@ -132,21 +133,31 @@ namespace ApiScan
 			{
 				handleRecordDeclaration(recordDeclaration);
 			}
+
+			if (typedefDeclaration && isLocationInScope(typedefDeclaration->getLocStart()))
+			{
+				handleTypedefDeclaration(typedefDeclaration);
+			}
 		}
 		return true;
 	}
 
 	void SourceScanner::handleFunctionDeclaration(clang::FunctionDecl *declaration)
 	{
-		FunctionInfo functionInfo;
+		FunctionInfo functionInfo = {};
 		functionInfo.name = declaration->getDeclName().getAsString();
 		functionInfo.returnType = getTypeInfo(declaration->getReturnType());
 
 		for (const clang::ParmVarDecl *parameterDeclaration : declaration->parameters())
 		{
-			ParameterInfo parameterInfo;
+			ParameterInfo parameterInfo = {};
 			parameterInfo.name = translator.translate(DictParam, parameterDeclaration->getDeclName().getAsString());
 			parameterInfo.type = getTypeInfo(parameterDeclaration->getType());
+
+			if (parameterDeclaration->hasAttr<clang::AlignedAttr>())
+			{
+				parameterInfo.alignment = parameterDeclaration->getAttr<clang::AlignedAttr>()->getAlignment(compiler.getASTContext()) / 8;
+			}
 
 			functionInfo.parameters.push_back(parameterInfo);
 		}
@@ -156,27 +167,57 @@ namespace ApiScan
 
 	void SourceScanner::handleRecordDeclaration(clang::RecordDecl *declaration)
 	{
-		StructInfo structInfo;
+		StructInfo structInfo = {};
 		structInfo.name = declaration->getDeclName().getAsString();
 
 		for (const clang::FieldDecl *fieldDeclaration : declaration->fields())
 		{
-			FieldInfo fieldInfo;
+			FieldInfo fieldInfo = {};
 			fieldInfo.name = translator.translate(DictField, fieldDeclaration->getDeclName().getAsString());
 			fieldInfo.type = getTypeInfo(fieldDeclaration->getType());
 
+			if (fieldDeclaration->hasAttr<clang::AlignedAttr>())
+			{
+				fieldInfo.alignment = fieldDeclaration->getAttr<clang::AlignedAttr>()->getAlignment(compiler.getASTContext()) / 8;
+			}
+
 			structInfo.fields.push_back(fieldInfo);
+		}
+
+		const clang::ASTRecordLayout &structLayout = compiler.getASTContext().getASTRecordLayout(declaration);
+
+		if (structLayout.getFieldCount() == structInfo.fields.size())
+		{
+			for (unsigned int i = 0; i < structInfo.fields.size(); i++)
+			{
+				structInfo.fields[i].offsetDefined = true;
+				structInfo.fields[i].offset = structLayout.getFieldOffset(i) / 8;
+			}
 		}
 
 		sourceMap.addStruct(structInfo);
 	}
 
+	void SourceScanner::handleTypedefDeclaration(clang::TypedefNameDecl *declaration)
+	{
+		declaration = declaration->getCanonicalDecl();
+
+		TypedefInfo typedefInfo = {};
+		typedefInfo.name = declaration->getDeclName().getAsString();
+		typedefInfo.type = getTypeInfo(declaration->getUnderlyingType());
+
+		if (declaration->hasAttr<clang::AlignedAttr>())
+		{
+			typedefInfo.alignment = declaration->getAttr<clang::AlignedAttr>()->getAlignment(compiler.getASTContext()) / 8;
+		}
+
+		sourceMap.addTypedef(typedefInfo);
+	}
+
 	TypeInfo SourceScanner::getTypeInfo(const clang::QualType &type)
 	{
-		TypeInfo typeInfo;
-
-		typeInfo.name = translator.translate(DictType, type.getCanonicalType().getAsString());
-		typeInfo.constantArraySize = 0;
+		TypeInfo typeInfo = {};
+		typeInfo.name = translator.translate(DictType, type.getDesugaredType(compiler.getASTContext()).getAsString());
 
 		if (type->getAs<clang::DecayedType>())
 		{

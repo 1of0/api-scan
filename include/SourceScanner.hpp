@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 
+#include <clang/AST/RecordLayout.h>
 #include <clang/Basic/TargetInfo.h>
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Frontend/TextDiagnosticPrinter.h>
@@ -44,6 +45,7 @@ namespace ApiScan
 
 		void handleFunctionDeclaration(clang::FunctionDecl *declaration);
 		void handleRecordDeclaration(clang::RecordDecl *declaration);
+		void handleTypedefDeclaration(clang::TypedefNameDecl *declaration);
 
 		TypeInfo getTypeInfo(const clang::QualType &type);
 

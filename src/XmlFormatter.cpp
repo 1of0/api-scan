@@ -25,6 +25,29 @@ namespace ApiScan
 			stream << "</define>" << std::endl;
 		}
 
+		for (auto &kv : sourceMap.getTypedefMap())
+		{
+			TypedefInfo typedefInfo = kv.second;
+
+			stream << I(1)
+				<< "<typedef"
+				<< " name=" << QUOTE(typedefInfo.name)
+				<< " type=" << QUOTE(typedefInfo.type.name)
+			;
+
+			if (typedefInfo.type.constantArraySize)
+			{
+				stream << " constantArraySize=" << STREAM_QUOTE(typedefInfo.type.constantArraySize);
+			}
+
+			if (typedefInfo.alignment)
+			{
+				stream << " alignment=" << STREAM_QUOTE(typedefInfo.alignment);
+			}
+
+			stream << " />" << std::endl;
+		}
+
 		for (auto &kv : sourceMap.getFunctionMap())
 		{
 			FunctionInfo function = kv.second;
@@ -55,6 +78,11 @@ namespace ApiScan
 					stream << " constantArraySize=" << STREAM_QUOTE(parameter.type.constantArraySize);
 				}
 
+				if (parameter.alignment)
+				{
+					stream << " alignment=" << STREAM_QUOTE(parameter.alignment);
+				}
+
 				stream << " />" << std::endl;
 			}
 
@@ -82,6 +110,16 @@ namespace ApiScan
 				if (fieldInfo.type.constantArraySize)
 				{
 					stream << " constantArraySize=" << STREAM_QUOTE(fieldInfo.type.constantArraySize);
+				}
+
+				if (fieldInfo.alignment)
+				{
+					stream << " alignment=" << STREAM_QUOTE(fieldInfo.alignment);
+				}
+
+				if (fieldInfo.offsetDefined)
+				{
+					stream << " offset=" << STREAM_QUOTE(fieldInfo.offset);
 				}
 
 				stream << " />" << std::endl;
